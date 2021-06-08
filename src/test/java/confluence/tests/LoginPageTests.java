@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class LoginPageTests {
 
     private final WebDriver driver;
-    private LoginPage loginPage;
+    private final LoginPage loginPage;
 
     public LoginPageTests(WebDriver driver) {
         this.driver = driver;

@@ -16,16 +16,22 @@ public class TestPage {
     @FindBy(className = "css-k5brqb")
     private WebElement restrictionsModalCancelButton;
 
+    @FindBy(css = "button[data-test-id='inspect-perms-entry-button']")
+    private WebElement inspectPermsButton;
+
     public void navigateTo() {
-        //driver.get("https://szliaw.atlassian.net/wiki/spaces/HOME/pages/262146/Test+Page");
-        driver.get("https://bonigarcia.github.io/selenium-jupiter/");
+        driver.get("https://szliaw.atlassian.net/wiki/spaces/HOME/pages/262146/Test+Page");
     }
 
-    public void openModal() {
+    public void openRestrictionsModal() {
         restrictionsButton.click();
     }
 
-    public void closeModal() {
+    public void closeRestrictionsModal() {
         restrictionsModalCancelButton.click();
+    }
+
+    public void openInspectPermsModal() {
+        inspectPermsButton.click();
     }
 }
