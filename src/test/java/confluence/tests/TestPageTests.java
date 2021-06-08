@@ -2,19 +2,18 @@ package confluence.tests;
 
 import confluence.pageobjects.TestPage;
 import io.github.bonigarcia.seljup.SeleniumExtension;
-import io.github.bonigarcia.seljup.SingleSession;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SeleniumExtension.class)
 @DisplayName("Confluence Page Tests")
-public class TestPageTests {
+class TestPageTests {
 
     private final WebDriver driver;
     private TestPage testPage;
@@ -31,14 +30,18 @@ public class TestPageTests {
     }
 
     @Test
-    @DisplayName("Check page loading")
+    @DisplayName("Check page loads correct URL")
     void checkPage() {
-        //assertThat(driver.getTitle().contains("Log in to continue"));
-        //TODO check assert, always passing
-        assertThat(driver.getTitle().contains("Milano"));
+        //TODO check driver values
+        String expectedUrl="https://bonigarcia.github.io/selenium-jupiter/";
+        String actualUrl;
+        actualUrl = driver.getCurrentUrl();
+        assertAll(
+            () -> assertEquals(expectedUrl, actualUrl),
+            () -> assertEquals("Selenium-Jupiter: JUnit 5 extension for Selenium", driver.getTitle())
+        );
     }
 
-    @Test
     @DisplayName("Open and close Restrictions modal")
     void openAndCloseRestrictions() {
         testPage.openModal();
