@@ -21,6 +21,9 @@ public class TestPageTests {
 
     }
 
+    //@BeforeAll
+    //need to reset the page's permission state to Anyone can view
+
     @Test
     @DisplayName("Verify can login and loads wiki Test page")
     void loginAndLoadTestPage() {
@@ -47,15 +50,39 @@ public class TestPageTests {
     }
 
     @Test
-    @DisplayName("Open and close Restrictions modal")
-    void setPermissionsToAnyoneCanView() {
+    @DisplayName("Set page permissions to 'Anyone can view and edit'")
+    void setPermissionsAnyoneCanView() {
         loginAndLoadTestPage();
         testPage.openRestrictionsModal();
         //check modal is open by verifying Inspect permissions button is there
         assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
         testPage.selectRestrictionsOption("Anyone can view and edit");
         //check icon is correct for selection
+        assertTrue(testPage.getRestrictionsIconUnlocked().isDisplayed(), "Restrictions icon should be unlocked");
+    }
 
+    @Test
+    @DisplayName("Set page permissions to 'Anyone can view, only some can edit'")
+    void setPermissionsOnlySomeCanEdit() {
+        loginAndLoadTestPage();
+        testPage.openRestrictionsModal();
+        //check modal is open by verifying Inspect permissions button is there
+        assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
+        testPage.selectRestrictionsOption("Anyone can view, only some can edit");
+        //check icon is correct for selection
+        assertTrue(testPage.getRestrictionsIconUnlocked().isDisplayed(), "Restrictions icon should be unlocked");
+    }
+
+    @Test
+    @DisplayName("Set page permissions to 'Only specific people can view or edit'")
+    void setPermissionsOnlySpecificPeople() {
+        loginAndLoadTestPage();
+        testPage.openRestrictionsModal();
+        //check modal is open by verifying Inspect permissions button is there
+        assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
+        testPage.selectRestrictionsOption("Only specific people can view or edit");
+        //check icon is correct for selection
+        assertTrue(testPage.getRestrictionsIconLocked().isDisplayed(), "Restrictions icon should be unlocked");
     }
 
 }
