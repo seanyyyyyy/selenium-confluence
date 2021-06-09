@@ -5,10 +5,7 @@ import confluence.pageobjects.TestPage;
 import io.github.bonigarcia.seljup.SeleniumExtension;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.PageFactory;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +36,7 @@ class TestPageTests {
 
     @Test
     @DisplayName("Verify can login and loads wiki Test page")
-    void checkTestPageLoad() {
+    void loginAndLoadTestPage() {
         loginPage.navigateTo();
         loginPage.userLogin("szliaw@gmail.com", "Testing123");
         testPage.navigateTo();
@@ -55,13 +52,29 @@ class TestPageTests {
     @Test
     @DisplayName("Open and close Restrictions modal")
     void openAndCloseRestrictionsModal() {
-        checkTestPageLoad();
+        loginAndLoadTestPage();
+        testPage.openRestrictionsModal();
+        //check modal is open by verifying Inspect permissions button is there
+        assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
+        testPage.closeRestrictionsModal();
+        //check modal is now closed
+        try{
+            testPage.openInspectPermsModal();
+        }
+        catch (StaleElementReferenceException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    @DisplayName("Open and close Restrictions modal")
+    void setPermissionsToAnyoneCanView() {
+        loginAndLoadTestPage();
         testPage.openRestrictionsModal();
         //check modal is open by verifying Inspect permissions button is there
         WebElement inspectButton = driver.findElement(By.cssSelector("button[data-test-id='inspect-perms-entry-button']"));
-        assertTrue(inspectButton.isDisplayed(), "Inspect button does exist");
-
-        testPage.closeRestrictionsModal();
+        assertTrue(inspectButton.isDisplayed(), "Inspect permissions button displayed");
+        testPage.selectRestrictionsOption("Anyone can view and edit");
         //check modal is now closed
     }
 
