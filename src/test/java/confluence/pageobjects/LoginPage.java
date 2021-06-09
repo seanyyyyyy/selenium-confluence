@@ -9,8 +9,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class LoginPage {
 
     private final WebDriver driver;
+    private final WebDriverWait wait;
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver,10);
     }
 
     @FindBy(id="username") private WebElement usernameInput;
@@ -24,10 +26,10 @@ public class LoginPage {
     public void userLogin(String username, String password) {
         usernameInput.sendKeys(username);
         loginButton.click();
-        WebDriverWait wait = new WebDriverWait(driver,10);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("password")));
         passwordInput.sendKeys(password);
         loginButton.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-testid='switcher-btn']")));
     }
 
 }

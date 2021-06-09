@@ -10,8 +10,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -25,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestPageTests {
 
     private final WebDriver driver;
-    private final WebDriverWait wait;
     private final TestPage testPage;
     private final LoginPage loginPage;
 
@@ -33,8 +30,6 @@ class TestPageTests {
         this.driver = driver;
         this.testPage = PageFactory.initElements(driver, TestPage.class);
         this.loginPage = PageFactory.initElements(driver, LoginPage.class);
-        this.wait = new WebDriverWait(driver,10);
-        this.testPage.navigateTo();
     }
 
     @AfterEach
@@ -43,10 +38,10 @@ class TestPageTests {
     }
 
     @Test
-    @DisplayName("Verify can login and loads correct page")
-    void checkPage() {
+    @DisplayName("Verify can login and loads wiki Test page")
+    void checkTestPageLoad() {
+        loginPage.navigateTo();
         loginPage.userLogin("szliaw@gmail.com", "Testing123");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a[data-testid='app-navigation-wordmark']")));
         testPage.navigateTo();
         String expectedUrl="https://szliaw.atlassian.net/wiki/spaces/HOME/pages/262146/Test+Page";
         String actualUrl;
@@ -60,14 +55,12 @@ class TestPageTests {
     @Test
     @DisplayName("Open and close Restrictions modal")
     void openAndCloseRestrictionsModal() {
-        checkPage();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='restrictions.dialog.button']")));
+        checkTestPageLoad();
         testPage.openRestrictionsModal();
         //check modal is open by verifying Inspect permissions button is there
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='inspect-perms-entry-button']")));
         WebElement inspectButton = driver.findElement(By.cssSelector("button[data-test-id='inspect-perms-entry-button']"));
-        // need to upgrade confluence account...
-        assertTrue(!inspectButton.isDisplayed(), "Inspect button does not exist");
+        assertTrue(inspectButton.isDisplayed(), "Inspect button does exist");
+
         testPage.closeRestrictionsModal();
         //check modal is now closed
     }
