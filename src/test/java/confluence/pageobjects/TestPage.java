@@ -1,7 +1,9 @@
 package confluence.pageobjects;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -19,6 +21,7 @@ public class TestPage {
     private final By restrictionsButtonBy = By.cssSelector("button[data-test-id='restrictions.dialog.button']");
     private final By restrictionsIconUnlockedBy = By.cssSelector("img[data-test-id='unlocked-icon']");
     public WebElement getRestrictionsIconUnlocked() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(restrictionsIconUnlockedBy));
         return driver.findElement(restrictionsIconUnlockedBy);
     }
     private final By restrictionsIconLockedBy = By.cssSelector("img[data-test-id='locked-icon']");
@@ -36,6 +39,9 @@ public class TestPage {
     }
 
     private final By restrictionsDropdownBy = By.cssSelector("div[data-test-id='restrictions-dialog.content-mode-select']");
+    private final By dropdownAnyoneCanViewBy = By.xpath("//*[@id=\"react-select-2-option-0\"]/div/span");
+    private final By dropdownOnlySomeCanEditBy = By.xpath("//*[@id=\"react-select-2-option-1\"]/div/span");
+    private final By dropdownOnlySpecificPeopleBy = By.xpath("//*[@id=\"react-select-2-option-2\"]/div/span");
 
     public void navigateTo() {
         driver.get("https://szliaw.atlassian.net/wiki/spaces/HOME/pages/262146/Test+Page");
@@ -51,29 +57,26 @@ public class TestPage {
     public void selectRestrictionsOption(String option) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-test-id='restrictions-dialog.content-mode-select']")));
         driver.findElement(restrictionsDropdownBy).click();
-        Actions keyDown = new Actions(driver); // hacky way
+        /** Implementation Notes:
+         * cannot locate dropdown items using css likely due to some React magic so had to use xpath
+         */
         switch (option) {
             case "Anyone can view and edit":
-                //driver.findElement(By.id("react-select-6-option-0")).click();
-                keyDown.sendKeys(Keys.chord(Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.ENTER)).perform();
+                driver.findElement(dropdownAnyoneCanViewBy).click();
                 break;
             case "Anyone can view, only some can edit":
-                //driver.findElement(By.id("react-select-6-option-1")).click();
-                keyDown.sendKeys(Keys.chord(Keys.DOWN, Keys.ENTER)).perform();
+                driver.findElement(dropdownOnlySomeCanEditBy).click();
                 break;
             case "Only specific people can view or edit":
-                //driver.findElement(By.id("react-select-6-option-2")).click();
-                keyDown.sendKeys(Keys.chord(Keys.DOWN, Keys.DOWN, Keys.ENTER)).perform();
+                driver.findElement(dropdownOnlySpecificPeopleBy).click();
                 break;
         }
-        /**
-         * Implementation Notes: for some reason cannot use driver to click the Apply button directly
-         * (seems to be a data-focus-lock element overlapping, although it works for the Cancel button...🤷)
-         * So tried to use JavascriptExecutor but when using findElement(restrictionsModalApplyButtonBy)
-         * it turns out the Share button on the main page has the exact same class value??
-         * So in the end I pulled a list of the elements with that ID and it happens to be the second one.
-         *
-         * Also working: keyDown.sendKeys(Keys.chord(Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.TAB, Keys.ENTER)).perform();
+        /** Implementation Notes:
+         * for some reason driver cannot click the Apply button directly (seems to be a data-focus-lock element
+         * overlapping, although it works for the Cancel button...🤷)
+         * So used JavascriptExecutor but when using findElement on the class value
+         * the Share button on the main page has the exact same value
+         * so used findElements to get list of all the elements with that ID and selected second one
          */
         List<WebElement> buttons = driver.findElements(restrictionsModalApplyButtonBy);
         JavascriptExecutor executor = (JavascriptExecutor)driver;
