@@ -65,6 +65,7 @@ public class TestPageTests {
         testPage.openRestrictionsModal();
         assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
         testPage.selectRestrictionsOption("Anyone can view, only some can edit");
+        //TODO select specific users
         assertTrue(testPage.getRestrictionsIconUnlocked().isDisplayed(), "Restrictions icon should be unlocked");
     }
 
@@ -75,6 +76,7 @@ public class TestPageTests {
         testPage.openRestrictionsModal();
         assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
         testPage.selectRestrictionsOption("Only specific people can view or edit");
+        //TODO select specific users
         assertTrue(testPage.getRestrictionsIconLocked().isDisplayed(), "Restrictions icon should be locked");
     }
 
