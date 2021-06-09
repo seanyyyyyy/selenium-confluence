@@ -54,12 +54,15 @@ public class TestPage {
         Actions keyDown = new Actions(driver); // hacky way
         switch (option) {
             case "Anyone can view and edit":
+                //driver.findElement(By.id("react-select-6-option-0")).click();
                 keyDown.sendKeys(Keys.chord(Keys.DOWN, Keys.DOWN, Keys.DOWN, Keys.ENTER)).perform();
                 break;
             case "Anyone can view, only some can edit":
+                //driver.findElement(By.id("react-select-6-option-1")).click();
                 keyDown.sendKeys(Keys.chord(Keys.DOWN, Keys.ENTER)).perform();
                 break;
             case "Only specific people can view or edit":
+                //driver.findElement(By.id("react-select-6-option-2")).click();
                 keyDown.sendKeys(Keys.chord(Keys.DOWN, Keys.DOWN, Keys.ENTER)).perform();
                 break;
         }
