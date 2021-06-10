@@ -18,7 +18,6 @@ public class TestPageTests {
     public TestPageTests(WebDriver driver) {
         this.testPage = PageFactory.initElements(driver, TestPage.class);
         this.loginPage = PageFactory.initElements(driver, LoginPage.class);
-
     }
 
     @Test
@@ -82,7 +81,16 @@ public class TestPageTests {
         testPage.openRestrictionsModal();
         assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
         testPage.selectRestrictionsOption("Only specific people can view or edit");
-        //TODO select specific users
+        assertTrue(testPage.getUserSearchField().isDisplayed(), "User search field should appear when Anyone can view option selected");
+        testPage.addUserField();
+        assertEquals(1, testPage.getUserRemoveButton().size(), "Verify user has been added if remove button visible");
+        testPage.clickRestrictionsModalApply();
+        assertTrue(testPage.getRestrictionsIconLocked().isDisplayed(), "Restrictions icon should be locked");
+        //remove user to keep test data clean
+        testPage.openRestrictionsModal();
+        testPage.removeUserInPanel();
+        assertEquals(0, testPage.getUserRemoveButton().size(), "should be no Remove button as user removed");
+        testPage.clickRestrictionsModalApply();
         assertTrue(testPage.getRestrictionsIconLocked().isDisplayed(), "Restrictions icon should be locked");
     }
 

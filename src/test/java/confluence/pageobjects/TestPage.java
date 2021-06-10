@@ -13,7 +13,7 @@ public class TestPage {
 
     public TestPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver,10);
+        this.wait = new WebDriverWait(driver,5);
     }
 
     private final By restrictionsButtonBy = By.cssSelector("button[data-test-id='restrictions.dialog.button']");
@@ -45,6 +45,15 @@ public class TestPage {
     public WebElement getUserSearchField() {
         return driver.findElement(userSearchFieldBy);
     }
+
+    private final By userPickerBy = By.cssSelector("#react-select-restrictions\\:user-and-group-search\\:user-and-group-picker-option-0");
+    private final By removeUserInsideBy = By.cssSelector("button[data-testid='close-button-undefined']");
+    private final By permissionDropdownBy = By.cssSelector("div.css-jjbhfw.e3nhwts3");
+    private final By dropdownSelectionEditBy = By.id("react-select-3-option-1");
+    private final By addUserButtonBy = By.cssSelector("button.e3nhwts5.css-17mybho");
+    private final By permissionDropdownInnerBy = By.cssSelector("div.css-4avucx-control");
+    private final By dropdownSelectionViewBy = By.id("react-select-4-option-0");
+
     private final By userRemoveButtonBy = By.cssSelector("button.css-msjm0");
     public List<WebElement> getUserRemoveButton() {
         return driver.findElements(userRemoveButtonBy);
@@ -56,18 +65,18 @@ public class TestPage {
     }
 
     public void openRestrictionsModal() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='restrictions.dialog.button']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(restrictionsButtonBy));
+        // wait for overlay to get removed
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.sc-hmXxxW.doZtJh")));
         driver.findElement(restrictionsButtonBy).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='inspect-perms-entry-button']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(inspectPermsButtonBy));
     }
 
+    /** Implementation Notes:
+     * Cannot locate dropdown items using css likely due to some React magic so had to use xpath
+     */
     public void selectRestrictionsOption(String option) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-test-id='restrictions-dialog.content-mode-select']")));
         driver.findElement(restrictionsDropdownBy).click();
-        /** Implementation Notes:
-         * cannot locate dropdown items using css likely due to some React magic so had to use xpath
-         */
         switch (option) {
             case "Anyone can view and edit":
                 driver.findElement(dropdownAnyoneCanViewBy).click();
@@ -83,32 +92,40 @@ public class TestPage {
 
     public void addUserField() {
         Actions action = new Actions(driver);
-        // click on user field and type some text
+        // click on user search field and type some text
         driver.findElement(userSearchFieldBy).click();
         action.sendKeys("Trello").perform();
         // select user - press enter?
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#react-select-restrictions\\:user-and-group-search\\:user-and-group-picker-option-0")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(userPickerBy));
         action.sendKeys(Keys.ENTER).perform();
-        // remove that user from user field using the x button
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-testid='close-button-undefined']")));
-        driver.findElement(By.cssSelector("button[data-testid='close-button-undefined']")).click();
-        // select user again
+        // remove added user from user search field using the x button
+        wait.until(ExpectedConditions.visibilityOfElementLocated(removeUserInsideBy));
+        driver.findElement(removeUserInsideBy).click();
+        // select same user again
         driver.findElement(userSearchFieldBy).click();
         action.sendKeys("Trello").perform();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#react-select-restrictions\\:user-and-group-search\\:user-and-group-picker-option-0")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(userPickerBy));
         action.sendKeys(Keys.ENTER).perform();
-        // click add button to add user to field
-        driver.findElement(By.cssSelector("button.e3nhwts5.css-17mybho")).click();
+        //(Only specific people scenario) if the edit dropdown is visible set status as Edit
+        if (driver.findElement(permissionDropdownBy).isDisplayed()) {
+            driver.findElement(permissionDropdownBy).click();
+            driver.findElement(dropdownSelectionEditBy).click();
+        }
+        driver.findElement(addUserButtonBy).click();
+        List<WebElement> dropdowns = driver.findElements(permissionDropdownInnerBy);
+        //(Only specific people scenario) set added user status as View
+        if (dropdowns.size() == 3) {
+            dropdowns.get(2).click();
+            driver.findElement(dropdownSelectionViewBy).click();
+        }
     }
 
+    /** Implementation Notes:
+     * for some reason driver cannot click the Apply button directly so used JavascriptExecutor
+     * (seems to be a data-focus-lock element overlapping
+     * ...although direct works for the Cancel button 🤷)
+     */
     public void clickRestrictionsModalApply() {
-        /** Implementation Notes:
-         * for some reason driver cannot click the Apply button directly (seems to be a data-focus-lock element
-         * overlapping... although it works for the Cancel button 🤷)
-         * So used JavascriptExecutor but when using findElement on the class value
-         * the Share button on the main page has the exact same value
-         * so used findElements to get list of all the elements with that ID and selected second one
-         */
         List<WebElement> buttons = driver.findElements(restrictionsModalApplyButtonBy);
         JavascriptExecutor executor = (JavascriptExecutor)driver;
         executor.executeScript("arguments[0].click();", buttons.get(1));
@@ -124,7 +141,7 @@ public class TestPage {
     }
 
     public void openInspectPermsModal() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='inspect-perms-entry-button']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(inspectPermsButtonBy));
         driver.findElement(inspectPermsButtonBy).click();
     }
 }
