@@ -48,10 +48,9 @@ public class TestPage {
 
     private final By userPickerBy = By.cssSelector("#react-select-restrictions\\:user-and-group-search\\:user-and-group-picker-option-0");
     private final By removeUserInsideBy = By.cssSelector("button[data-testid='close-button-undefined']");
-    private final By permissionDropdownBy = By.cssSelector("div.css-jjbhfw.e3nhwts3");
+    private final By permissionDropdownBy = By.cssSelector("div.css-4avucx-control");
     private final By dropdownSelectionEditBy = By.id("react-select-3-option-1");
     private final By addUserButtonBy = By.cssSelector("button.e3nhwts5.css-17mybho");
-    private final By permissionDropdownInnerBy = By.cssSelector("div.css-4avucx-control");
     private final By dropdownSelectionViewBy = By.id("react-select-4-option-0");
 
     private final By userRemoveButtonBy = By.cssSelector("button.css-msjm0");
@@ -76,6 +75,7 @@ public class TestPage {
      * Cannot locate dropdown items using css likely due to some React magic so had to use xpath
      */
     public void selectRestrictionsOption(String option) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(restrictionsDropdownBy));
         driver.findElement(restrictionsDropdownBy).click();
         switch (option) {
             case "Anyone can view and edit":
@@ -107,13 +107,14 @@ public class TestPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(userPickerBy));
         action.sendKeys(Keys.ENTER).perform();
         //(Only specific people scenario) if the edit dropdown is visible set status as Edit
-        if (driver.findElement(permissionDropdownBy).isDisplayed()) {
-            driver.findElement(permissionDropdownBy).click();
+        List<WebElement> dropdowns = driver.findElements(permissionDropdownBy);
+        if (dropdowns.size() == 2) {
+            dropdowns.get(1).click();
             driver.findElement(dropdownSelectionEditBy).click();
         }
         driver.findElement(addUserButtonBy).click();
-        List<WebElement> dropdowns = driver.findElements(permissionDropdownInnerBy);
         //(Only specific people scenario) set added user status as View
+        dropdowns = driver.findElements(permissionDropdownBy);
         if (dropdowns.size() == 3) {
             dropdowns.get(2).click();
             driver.findElement(dropdownSelectionViewBy).click();

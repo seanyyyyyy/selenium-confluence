@@ -20,8 +20,7 @@ public class TestPageTests {
         this.loginPage = PageFactory.initElements(driver, LoginPage.class);
     }
 
-    @Test
-    @DisplayName("Verify can login and loads wiki Test page")
+    @DisplayName("Login and load Confluence Test page")
     void loginAndLoadTestPage() {
         loginPage.navigateTo();
         loginPage.userLogin("szliaw@gmail.com", "Testing123");
@@ -45,17 +44,18 @@ public class TestPageTests {
     }
 
     @Test
-    @DisplayName("Set page permissions to 'Anyone can view and edit'")
+    @DisplayName("'Anyone can view and edit' set page permissions")
     void setPermissionsAnyoneCanView() {
         loginAndLoadTestPage();
         testPage.openRestrictionsModal();
         assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
         testPage.selectRestrictionsOption("Anyone can view and edit");
+        testPage.clickRestrictionsModalApply();
         assertTrue(testPage.getRestrictionsIconUnlocked().isDisplayed(), "Restrictions icon should be unlocked");
     }
 
     @Test
-    @DisplayName("Set page permissions to 'Anyone can view, only some can edit' and add a User")
+    @DisplayName("'Anyone can view, only some can edit' set page permissions for a specific User")
     void setPermissionsOnlySomeCanEdit() {
         loginAndLoadTestPage();
         testPage.openRestrictionsModal();
@@ -75,7 +75,7 @@ public class TestPageTests {
     }
 
     @Test
-    @DisplayName("Set page permissions to 'Only specific people can view or edit' and add a User")
+    @DisplayName("'Only specific people can view or edit' set page permissions for a specific User")
     void setPermissionsOnlySpecificPeople() {
         loginAndLoadTestPage();
         testPage.openRestrictionsModal();

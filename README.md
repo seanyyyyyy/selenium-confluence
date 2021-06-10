@@ -18,4 +18,8 @@ Implementation notes:
 
 Issues:
 - inconsistent tagging: some are 'data-test-id', some are 'data-testid'
+- all the dropdown fields in the Restrictions modal have no unique ID or tags
+  (all just <div class="css-4avucx-control">) which makes it more difficult to 
+  test them individually.
+
   
