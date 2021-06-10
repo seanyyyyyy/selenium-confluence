@@ -1,9 +1,7 @@
 package confluence.pageobjects;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -43,6 +41,15 @@ public class TestPage {
     private final By dropdownOnlySomeCanEditBy = By.xpath("//*[@id=\"react-select-2-option-1\"]/div/span");
     private final By dropdownOnlySpecificPeopleBy = By.xpath("//*[@id=\"react-select-2-option-2\"]/div/span");
 
+    private final By userSearchFieldBy = By.cssSelector("div[data-test-id='user-and-group-search']");
+    public WebElement getUserSearchField() {
+        return driver.findElement(userSearchFieldBy);
+    }
+    private final By userRemoveButtonBy = By.cssSelector("button.css-msjm0");
+    public List<WebElement> getUserRemoveButton() {
+        return driver.findElements(userRemoveButtonBy);
+    }
+
     public void navigateTo() {
         driver.get("https://szliaw.atlassian.net/wiki/spaces/HOME/pages/262146/Test+Page");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a[data-testid='app-navigation-wordmark']")));
@@ -50,6 +57,7 @@ public class TestPage {
 
     public void openRestrictionsModal() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='restrictions.dialog.button']")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("div.sc-hmXxxW.doZtJh")));
         driver.findElement(restrictionsButtonBy).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-test-id='inspect-perms-entry-button']")));
     }
@@ -71,9 +79,32 @@ public class TestPage {
                 driver.findElement(dropdownOnlySpecificPeopleBy).click();
                 break;
         }
+    }
+
+    public void addUserField() {
+        Actions action = new Actions(driver);
+        // click on user field and type some text
+        driver.findElement(userSearchFieldBy).click();
+        action.sendKeys("Trello").perform();
+        // select user - press enter?
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#react-select-restrictions\\:user-and-group-search\\:user-and-group-picker-option-0")));
+        action.sendKeys(Keys.ENTER).perform();
+        // remove that user from user field using the x button
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button[data-testid='close-button-undefined']")));
+        driver.findElement(By.cssSelector("button[data-testid='close-button-undefined']")).click();
+        // select user again
+        driver.findElement(userSearchFieldBy).click();
+        action.sendKeys("Trello").perform();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#react-select-restrictions\\:user-and-group-search\\:user-and-group-picker-option-0")));
+        action.sendKeys(Keys.ENTER).perform();
+        // click add button to add user to field
+        driver.findElement(By.cssSelector("button.e3nhwts5.css-17mybho")).click();
+    }
+
+    public void clickRestrictionsModalApply() {
         /** Implementation Notes:
          * for some reason driver cannot click the Apply button directly (seems to be a data-focus-lock element
-         * overlapping, although it works for the Cancel button...🤷)
+         * overlapping... although it works for the Cancel button 🤷)
          * So used JavascriptExecutor but when using findElement on the class value
          * the Share button on the main page has the exact same value
          * so used findElements to get list of all the elements with that ID and selected second one
@@ -81,6 +112,11 @@ public class TestPage {
         List<WebElement> buttons = driver.findElements(restrictionsModalApplyButtonBy);
         JavascriptExecutor executor = (JavascriptExecutor)driver;
         executor.executeScript("arguments[0].click();", buttons.get(1));
+    }
+
+    public void removeUserInPanel() {
+        // remove top user can modify later if need to remove specific
+        driver.findElement(userRemoveButtonBy).click();
     }
 
     public void closeRestrictionsModal() {

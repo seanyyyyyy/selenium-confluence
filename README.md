@@ -15,4 +15,7 @@ Implementation notes:
   
 - Chose to use selenium-jupiter as opposed to normal because it had some interesting features I wanted to try out, e.g. tight integration with junit5, out-of-the-box different browsers, android devices and docker containers
   https://bonigarcia.github.io/selenium-jupiter/
+
+Issues:
+- inconsistent tagging: some are 'data-test-id', some are 'data-testid'
   

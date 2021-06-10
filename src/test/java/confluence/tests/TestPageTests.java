@@ -21,9 +21,6 @@ public class TestPageTests {
 
     }
 
-    //@BeforeAll
-    //need to reset the page's permission state to Anyone can view
-
     @Test
     @DisplayName("Verify can login and loads wiki Test page")
     void loginAndLoadTestPage() {
@@ -59,18 +56,27 @@ public class TestPageTests {
     }
 
     @Test
-    @DisplayName("Set page permissions to 'Anyone can view, only some can edit'")
+    @DisplayName("Set page permissions to 'Anyone can view, only some can edit' and add a User")
     void setPermissionsOnlySomeCanEdit() {
         loginAndLoadTestPage();
         testPage.openRestrictionsModal();
         assertTrue(testPage.getInspectPermsButton().isDisplayed(), "Inspect permissions button displayed");
         testPage.selectRestrictionsOption("Anyone can view, only some can edit");
-        //TODO select specific users
+        assertTrue(testPage.getUserSearchField().isDisplayed(), "User search field should appear when Anyone can view option selected");
+        testPage.addUserField();
+        assertEquals(1, testPage.getUserRemoveButton().size(), "Verify user has been added if remove button visible");
+        testPage.clickRestrictionsModalApply();
+        assertTrue(testPage.getRestrictionsIconUnlocked().isDisplayed(), "Restrictions icon should be unlocked");
+        //remove user to keep test data clean
+        testPage.openRestrictionsModal();
+        testPage.removeUserInPanel();
+        assertEquals(0, testPage.getUserRemoveButton().size(), "should be no Remove button as user removed");
+        testPage.clickRestrictionsModalApply();
         assertTrue(testPage.getRestrictionsIconUnlocked().isDisplayed(), "Restrictions icon should be unlocked");
     }
 
     @Test
-    @DisplayName("Set page permissions to 'Only specific people can view or edit'")
+    @DisplayName("Set page permissions to 'Only specific people can view or edit' and add a User")
     void setPermissionsOnlySpecificPeople() {
         loginAndLoadTestPage();
         testPage.openRestrictionsModal();
