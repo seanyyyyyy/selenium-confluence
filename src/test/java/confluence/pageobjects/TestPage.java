@@ -5,6 +5,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestPage {
@@ -27,9 +28,6 @@ public class TestPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(restrictionsIconLockedBy));
         return driver.findElement(restrictionsIconLockedBy);
     }
-    private final By restrictionsModalCancelButtonBy = By.cssSelector("button.css-k5brqb");
-
-    private final By restrictionsModalApplyButtonBy = By.cssSelector("button.css-18ztuab");
 
     private final By inspectPermsButtonBy = By.cssSelector("button[data-test-id='inspect-perms-entry-button']");
     public WebElement getInspectPermsButton() {
@@ -57,6 +55,10 @@ public class TestPage {
     public List<WebElement> getUserRemoveButton() {
         return driver.findElements(userRemoveButtonBy);
     }
+
+    private final By learnMoreButtonBy = By.cssSelector("a.css-abo4z9");
+    private final By restrictionsModalCancelButtonBy = By.cssSelector("button.css-k5brqb");
+    private final By restrictionsModalApplyButtonBy = By.cssSelector("button.css-18ztuab");
 
     public void navigateTo() {
         driver.get("https://szliaw.atlassian.net/wiki/spaces/HOME/pages/262146/Test+Page");
@@ -133,16 +135,23 @@ public class TestPage {
     }
 
     public void removeUserInPanel() {
-        // remove top user can modify later if need to remove specific
+        // removes top user can modify later if need to remove specific
         driver.findElement(userRemoveButtonBy).click();
     }
 
-    public void closeRestrictionsModal() {
+    public void cancelRestrictionsModal() {
         driver.findElement(restrictionsModalCancelButtonBy).click();
     }
 
     public void openInspectPermsModal() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(inspectPermsButtonBy));
         driver.findElement(inspectPermsButtonBy).click();
+    }
+
+    public String openLearnMoreGetUrl() {
+        driver.findElement(learnMoreButtonBy).click();
+        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+        return driver.getCurrentUrl();
     }
 }
